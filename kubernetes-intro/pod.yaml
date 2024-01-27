@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web
+  namespace: homework
+  labels:
+    app: web-app
+
+spec:
+  initContainers:
+  - name: web-init
+    image: busybox:1.35
+    command: ["sh", "-c", "echo \"homework #1\" >> /init/index.html"]
+    volumeMounts:
+    - name: work-dir
+      mountPath: /init
+
+  containers:
+  - name: nginx-webserver
+    image: docker.io/redrrah/nginx:v3
+    ports:
+    - containerPort: 8000
+    lifecycle:
+      preStop:
+        exec:
+          command: ["/bin/sh","-c","rm /homework/index.html"]
+    volumeMounts:
+    - name: work-dir
+      mountPath: /homework
+  volumes:
+  - name: work-dir
+    emptyDir: {}
