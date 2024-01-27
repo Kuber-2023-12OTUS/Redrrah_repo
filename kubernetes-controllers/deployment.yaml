@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+  namespace: homework
+  labels:
+    app: web-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web-app
+  template:
+    metadata:
+      labels:
+        app: web-app
+    spec:
+      nodeSelector:
+        homework: "true"
+      initContainers:
+      - name: web-init
+        image: busybox:1.35
+        command: ["sh", "-c", "echo \"homework #1\" >> /init/index.html"]
+        volumeMounts:
+        - name: work-dir
+          mountPath: /init
+      containers:
+      - name: nginx-webserver
+        image: docker.io/redrrah/nginx:v3
+        ports:
+        - containerPort: 8000
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh","-c","rm /homework/index.html"]
+        volumeMounts:
+        - name: work-dir
+          mountPath: /homework
+        readinessProbe:
+          exec:
+            command: ["cat", "/homework/index.html"]
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: work-dir
+        emptyDir: {}
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
