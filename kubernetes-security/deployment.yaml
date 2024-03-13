@@ -49,6 +49,7 @@ spec:
             command: ["cat", "/homework/index.html"]
           initialDelaySeconds: 5
           periodSeconds: 5
+      serviceAccountName: monitoring
       volumes:
       - name: work-dir
         persistentVolumeClaim:

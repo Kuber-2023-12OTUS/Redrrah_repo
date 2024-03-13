@@ -1,0 +1,69 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: web-app
+  name: monitoring
+  namespace: homework
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: web-app
+  name: cd
+  namespace: homework
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app: web-app
+  name: metrics-server
+rules:
+- apiGroups: [""]
+  resources: ["pods/metrics"]
+  verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app: web-app
+  name: monitoring-metrics-server
+  namespace: homework
+subjects:
+- kind: ServiceAccount
+  name: monitoring
+  namespace: homework
+roleRef:
+  kind: ClusterRole
+  name: metrics-server
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: admin
+  namespace: homework
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: web-app
+  name: admin
+  namespace: homework
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+- kind: ServiceAccount
+  name: cd
+  namespace: homework
