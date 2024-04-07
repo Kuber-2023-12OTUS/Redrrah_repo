@@ -19,8 +19,8 @@ spec:
         homework: "true"
       initContainers:
       - name: web-init
-        image: busybox:1.36
-        command: ["sh", "-c", "echo \"homework kubernetes-networks\" >> /init/index.html && wget -O /init/metrics.html http://192.168.49.2:8443/metrics"]
+        image: busybox:1.35
+        command: ["sh", "-c", 'echo \"homework kubernetes-volumes\" > /init/index.html']
         volumeMounts:
         - name: work-dir
           mountPath: /init
@@ -49,7 +49,6 @@ spec:
             command: ["cat", "/homework/index.html"]
           initialDelaySeconds: 5
           periodSeconds: 5
-      serviceAccountName: monitoring
       volumes:
       - name: work-dir
         persistentVolumeClaim:

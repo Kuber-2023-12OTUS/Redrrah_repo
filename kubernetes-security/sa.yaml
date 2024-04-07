@@ -23,7 +23,7 @@ metadata:
   name: metrics-server
 rules:
 - apiGroups: [""]
-  resources: ["pods/metrics"]
+  resources: ["/metrics"]
   verbs: ["get"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -67,3 +67,12 @@ subjects:
 - kind: ServiceAccount
   name: cd
   namespace: homework
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    kubernetes.io/service-account.name: cd
+  name: cd-token
+  namespace: homework
+type: kubernetes.io/service-account-token
