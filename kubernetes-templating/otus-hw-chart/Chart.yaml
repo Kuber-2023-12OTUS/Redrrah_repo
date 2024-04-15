@@ -1,0 +1,10 @@
+apiVersion: v2
+name: web-app
+description: A Helm chart for homework 6
+type: application
+version: 0.1.0
+appVersion: "0.0.1"
+dependencies:
+  - name: redis
+    version: "18.17.0"
+    repository: https://charts.bitnami.com/bitnami

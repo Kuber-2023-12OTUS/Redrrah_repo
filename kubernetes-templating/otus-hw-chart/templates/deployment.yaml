@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      # nodeSelector:
+      #   homework: "true"
+      initContainers:
+      - name: web-init
+        image: {{ .Values.busybox.image }}:{{ .Values.busybox.tag }}
+        command: ["sh", "-c", 'echo \"homework kubernetes-volumes\" > /init/index.html']
+        volumeMounts:
+        - name: work-dir
+          mountPath: /init
+      containers:
+      - name: nginx-webserver
+        image: {{ .Values.nginx.image }}:{{ .Values.nginx.tag }}
+        lifecycle:
+          postStart:
+            exec:
+              command:
+                - "/bin/sh"
+                - "-c"
+                - |
+                  rm -f /usr/share/nginx/html/index.html
+                  find /homework -type f -exec ln -s {} /usr/share/nginx/html \;
+          preStop:
+            exec:
+              command: ["/bin/sh","-c","rm /homework/index.html"]
+        volumeMounts:
+        - name: work-dir
+          mountPath: /homework
+        - name: cm-hw3-volume
+          mountPath: /homework/conf
+        {{- if .Values.readinessProbe.enabled }}
+        readinessProbe:
+          exec:
+            command: ["cat", "/homework/index.html"]
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        {{- end }}     
+      volumes:
+      - name: work-dir
+        persistentVolumeClaim:
+          claimName: {{ .Values.pvc.name }}
+      - name: cm-hw3-volume
+        configMap:
+          name: cm-hw3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1

@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: {{ .Values.ingress.rewrite_target }}
+  name: web-ingress
+  namespace: {{ .Values.namespace }}
+spec:
+  rules:
+  - host: "{{ .Values.namespace }}.otus"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /homepage(/|$)(.*)
+        backend:
+          service:
+            name: {{ .Values.ingress.name }}
+            port:
+              number: 80
+  - host: "{{ .Values.namespace }}.otus"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: {{ .Values.ingress.name }}
+            port:
+              number: 80
