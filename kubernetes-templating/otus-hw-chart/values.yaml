@@ -1,0 +1,18 @@
+busybox:
+  image: busybox
+  tag: 1.35
+nginx:
+  image: nginx
+  tag: 1.25
+replicas: 2
+namespace: homework
+reclaimPolicy: Retain
+pvc:
+  name: kuber-pvc
+  accessModes: ReadWriteOnce
+  storage: 2Gi
+ingress:
+  name: web-service
+  rewrite_target: /$2
+readinessProbe: 
+  enabled: true

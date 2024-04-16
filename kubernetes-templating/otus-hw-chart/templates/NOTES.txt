@@ -1,0 +1,1 @@
+Сервис доступен по адресу - http://{{ .Values.namespace }}.otus/homepage
