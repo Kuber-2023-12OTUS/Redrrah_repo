@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+  namespace: homework
+  labels:
+    app: web-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web-app
+  template:
+    metadata:
+      labels:
+        app: web-app
+    spec:
+      nodeSelector:
+        homework: "true"
+      initContainers:
+      - name: web-init
+        image: busybox:1.36
+        command: ["sh", "-c", "echo \"homework kubernetes-networks\" >> /init/index.html && wget -O /init/metrics.html http://192.168.49.2:8443/metrics"]
+        volumeMounts:
+        - name: work-dir
+          mountPath: /init
+      containers:
+      - name: nginx-webserver
+        image: nginx:1.25
+        lifecycle:
+          postStart:
+            exec:
+              command:
+                - "/bin/sh"
+                - "-c"
+                - |
+                  rm -f /usr/share/nginx/html/index.html
+                  find /homework -type f -exec ln -s {} /usr/share/nginx/html \;
+          preStop:
+            exec:
+              command: ["/bin/sh","-c","rm /homework/index.html"]
+        volumeMounts:
+        - name: work-dir
+          mountPath: /homework
+        - name: cm-hw3-volume
+          mountPath: /homework/conf
+        readinessProbe:
+          exec:
+            command: ["cat", "/homework/index.html"]
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      serviceAccountName: monitoring
+      volumes:
+      - name: work-dir
+        persistentVolumeClaim:
+          claimName: kuber-pvc
+      - name: cm-hw3-volume
+        configMap:
+          name: cm-hw3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1

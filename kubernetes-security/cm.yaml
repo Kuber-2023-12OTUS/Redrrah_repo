@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-hw3
+  namespace: homework
+data:
+  file: |
+    hw-name: "Hi! This is a kubernetes-volumes"
+    last-name: "Hahulin"
