@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dz7
+  labels:
+    app: dz7
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dz7
+  template:
+    metadata:
+      labels:
+        app: dz7
+    spec:
+      containers:
+      - name: mysql
+        image: roflmaoinmysoul/mysql-operator:1.0.0
+      serviceAccountName: mysql-admin

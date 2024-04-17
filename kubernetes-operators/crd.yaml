@@ -1,0 +1,30 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: mysqls.otus.homework
+spec:
+  scope: Namespaced
+  group: otus.homework
+  names:
+    plural: mysqls
+    singular: mysql
+    kind: MySQL
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                image:
+                  type: string
+                database:
+                  type: string
+                password:
+                  type: string
+                storage_size:
+                  type: string
