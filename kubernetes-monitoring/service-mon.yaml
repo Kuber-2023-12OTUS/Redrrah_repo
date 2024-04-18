@@ -1,0 +1,13 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: nginx-servicemonitor
+  labels:
+    team: homework
+spec:
+  selector:
+    matchLabels:
+      app: dz8-nginx
+  endpoints:
+  - port: web
+    interval: 30s
