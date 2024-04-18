@@ -20,7 +20,7 @@ spec:
 
         - name: nginx-prometheus-exporter
           image: nginx/nginx-prometheus-exporter:latest
-          # args: ["-nginx.scrape-uri", "http://localhost:8000/metrics"]
+          args: ["-nginx.scrape-uri", "http://localhost:8000/metrics"]
           ports:
             - name: web
               containerPort: 9113
