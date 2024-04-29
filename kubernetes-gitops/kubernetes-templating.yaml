@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kubernetes-templating
+  namespace: gitops
+spec:
+  project: otus
+  source:
+    repoURL: https://github.com/Kuber-2023-12OTUS/Redrrah_repo.git
+    targetRevision: HEAD
+    path: kubernetes-templating/otus-hw-chart
+    helm:
+      releaseName: web-app
+      valueFiles:
+        - ./values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: homeworkhelm
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - ApplyOutOfSyncOnly=true
+    - CreateNamespace=true
