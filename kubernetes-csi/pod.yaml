@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: otus-dz12
+  namespace: default
+spec:
+  containers:
+   - name: otus-dz12
+     image: nginx
+     volumeMounts:
+       - mountPath: /usr/share/nginx/html/s3
+         name: otus-dz12
+  volumes:
+   - name: otus-dz12
+     persistentVolumeClaim:
+       claimName: pvc-s3
+       readOnly: false
